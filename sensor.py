@@ -48,7 +48,7 @@ def match_time(alarms):
 def check_alarm_match_and_update_data(alarm):
     current_utc_time = datetime.utcnow().strftime("%H:%M")
     current_minute = current_utc_time.split(":")[1]
-    alarm_minute = alarm["time"].split(":")[1]
+    alarm_minute = alarm["current_time"].split(":")[1]
     
     if alarm["triggered"]:
         print("Alarm is triggered so person must be a wake and out of room")
