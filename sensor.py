@@ -64,17 +64,29 @@ def check_alarm_match_and_update_data(alarm):
     update_trigger_alarm(alarm["id"], True, current_utc_time)
     return
 
+def motion_detector():
+    print("Motion Detected")
+    alarms = db.child("alarms").get()
+    is_alarm_triggered, alarm  = match_time(alarms.val())
+    if is_alarm_triggered:
+        check_alarm_match_and_update_data(alarm)
+    return
+
+
+print("App starting...")
+sleep(2)
+print("App started")
 
 try:
+    GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=motion_detector)
     while True:
-        print("App running")
-        alarms = db.child("alarms").get()
-        is_alarm_triggered, alarm  = match_time(alarms.val())
+        sleep(100)
+        # print("App running")
         
-        if is_alarm_triggered:
-            if GPIO.input(PIR_PIN):
-                print("Motion Detected")
-                check_alarm_match_and_update_data(alarm)
+        # if is_alarm_triggered:
+        #     if GPIO.input(PIR_PIN):
+        #         print("Motion Detected")
+                
         # sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
