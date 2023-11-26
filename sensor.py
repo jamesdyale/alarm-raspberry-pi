@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+from gpiozero import MotionSensor
 from time import sleep, strftime
 from datetime import datetime
 import pyrebase
@@ -12,11 +12,7 @@ config = {
     "storageBucket": "alarm-clock-app-537c6.appspot.com"
 }
 
-GPIO.setmode(GPIO.BCM)
-
-PIR_PIN = 21
-
-GPIO.setup(PIR_PIN, GPIO.IN)
+pir = MotionSensor(4)
 
 firebase = pyrebase.initialize_app(config)
 
@@ -76,9 +72,10 @@ try:
     while True:
         print("App running")
         alarms = db.child("alarms").get()
-        print("GPIO.input(PIR_PIN)", GPIO.input(PIR_PIN))
-        if GPIO.input(PIR_PIN):
-            print("Motion Detected...")
+        # check if motion is detected
+        if pir.motion_detected:
+            print("Motion detected")
+        
                 # check_motion_and_update_data(alarm)
         # isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
         
@@ -86,4 +83,3 @@ try:
         # sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
-    GPIO.cleanup()
