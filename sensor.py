@@ -75,7 +75,7 @@ try:
             if GPIO.input(PIR_PIN):
                 print("Motion Detected")
                 check_alarm_match_and_update_data(alarm)
-        sleep(1)
+        # sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
