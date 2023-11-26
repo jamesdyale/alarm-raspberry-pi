@@ -77,14 +77,14 @@ print("Ready")
 
 
 try:
-    GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=MOTION)
-    while 1:
+    # GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=MOTION)
+    while True:
         # print("App running")
         # alarms = db.child("alarms").get()
         #isTimeMatched, alarm  = matchTime(alarms.val())
-        # if GPIO.input(PIR_PIN):
-        #        print("Motion Detected")
-        sleep(1)  
+        if GPIO.input(PIR_PIN):
+               print("Motion Detected")
+        sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
 
