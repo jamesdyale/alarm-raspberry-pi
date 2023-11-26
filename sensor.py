@@ -68,15 +68,22 @@ def check_motion_and_update_data(alarm):
     update_trigger_alarm(alarm["id"], True, current_utc_time)
     return
 
+def MOTION(PIR_PIN):
+    print("Motion Detected!")
+
+print("PIR Module Test (CTRL+C to exit)")
+sleep(2)
+print("Ready")
 
 
 try:
-    while True:
-        print("App running")
+    GPIO.add_event_detect(PIR_PIN, GPIO.RISING, callback=MOTION)
+    while 1:
+        # print("App running")
         # alarms = db.child("alarms").get()
         #isTimeMatched, alarm  = matchTime(alarms.val())
-        if GPIO.input(PIR_PIN):
-               print("Motion Detected")
+        # if GPIO.input(PIR_PIN):
+        #        print("Motion Detected")
         sleep(1)  
 except KeyboardInterrupt:
     print("Exiting...")
