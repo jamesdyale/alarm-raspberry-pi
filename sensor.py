@@ -29,7 +29,7 @@ def update_trigger_alarm(alarm_id, current_state, utc_current_time):
 
 
 def match_time(alarms, is_alarm_allowed_to_trigger):
-    print("Entered matching")
+    print("Checking if time matches")
     utc_current_time = datetime.utcnow().strftime("%H:%M")
     current_time_hour = utc_current_time.split(":")[0]
     current_time_minute = utc_current_time.split(":")[1]
@@ -41,10 +41,12 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
         if alarm_hour == current_time_hour:
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
+                    print("Time matched")
                     is_alarm_allowed_to_trigger = True
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
             
             if is_alarm_allowed_to_trigger:
+                print("Alarm is allowed to trigger")
                 return [True, alarm_value]
         
     is_alarm_allowed_to_trigger = False
@@ -52,6 +54,7 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
 
 
 def check_motion_and_update_data(alarm):
+    print("Checking motion and updating data")
     current_utc_time = datetime.utcnow().strftime("%H:%M")
     current_minute = current_utc_time.split(":")[1]
     alarm_minute = alarm["time"].split(":")[1]
@@ -80,9 +83,10 @@ try:
         isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
 
         if isTimeMatched:
+            print("Time matched")
             if GPIO.input(PIR_PIN):
-                check_motion_and_update_data(alarm)
                 print("Motion Detected")
+                check_motion_and_update_data(alarm)
         sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
