@@ -81,6 +81,8 @@ try:
         alarms = db.child("alarms").get()
         print("PIR_PIN: ")
         print(GPIO.input(PIR_PIN))
+        if GPIO.input(PIR_PIN):
+            print("Motion Detected")
         # isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
 
         # if isTimeMatched:
