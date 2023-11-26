@@ -3,7 +3,6 @@ from time import sleep, strftime
 from datetime import datetime
 import pyrebase
 
-is_alarm_allowed_to_trigger = False
 
 config = {
     "apiKey": "AIzaSyCs7mxtAmpeXgH5SS-qKBBzu0VLLWTJFF0",
@@ -26,7 +25,7 @@ def update_trigger_alarm(alarm_id, current_state, utc_current_time):
     db.child("alarms").child(alarm_id).update({"triggered": current_state, "current_time": utc_current_time})
 
 
-def match_time(alarms, is_alarm_allowed_to_trigger):
+def match_time(alarms):
     utc_current_time = datetime.utcnow().strftime("%H:%M")
     current_time_hour = utc_current_time.split(":")[0]
     current_time_minute = utc_current_time.split(":")[1]
@@ -38,18 +37,15 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
         if alarm_hour == current_time_hour:
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
-                    is_alarm_allowed_to_trigger = True
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
-            
-            if is_alarm_allowed_to_trigger:
-                print("Alarm is allowed to trigger")
+                    
+            if (int(current_time_minute) >= int(alarm_minute)):
                 return [True, alarm_value]
         
-    is_alarm_allowed_to_trigger = False
     return [False, None]
 
 
-def check_motion_and_update_data(alarm):
+def check_alarm_match_and_update_data(alarm):
     current_utc_time = datetime.utcnow().strftime("%H:%M")
     current_minute = current_utc_time.split(":")[1]
     alarm_minute = alarm["time"].split(":")[1]
@@ -73,12 +69,12 @@ try:
     while True:
         print("App running")
         alarms = db.child("alarms").get()
-        isTimeMatched, alarm  = match_time(alarms.val(), is_alarm_allowed_to_trigger)
+        is_alarm_triggered, alarm  = match_time(alarms.val())
         
-        if isTimeMatched:
+        if is_alarm_triggered:
             if GPIO.input(PIR_PIN):
                 print("Motion Detected")
-                check_motion_and_update_data(alarm)
+                check_alarm_match_and_update_data(alarm)
         sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
