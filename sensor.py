@@ -1,7 +1,15 @@
 import RPi.GPIO as GPIO
+from exponent_server_sdk import (
+    DeviceNotRegisteredError,
+    PushClient,
+    PushMessage,
+    PushServerError,
+)
 from time import sleep, strftime
 from datetime import datetime
 import pyrebase
+import requests 
+
 
 
 config = {
@@ -20,7 +28,24 @@ firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
 
-
+def send_push_message(token, message, extra=None):
+    try:
+        response = PushClient().publish(
+            PushMessage(to=token,
+                        body=message,
+                        data=extra))
+        
+    except PushServerError as exc:
+        print("PushServerError")
+        print(exc.errors)
+        print(exc.response_data)
+        raise
+    
+    try:
+        response.validate_response()
+    except DeviceNotRegisteredError:
+        print("DeviceNotRegisteredError")
+    
 def update_trigger_alarm(alarm_id, current_state, utc_current_time):
     db.child("alarms").child(alarm_id).update({"triggered": current_state, "current_time": utc_current_time})
 
@@ -40,6 +65,7 @@ def match_time(alarms):
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
+                    send_push_message(alarm["token"], "Alarm is triggered")
                     
             if (int(current_time_minute) >= int(alarm_minute)):
                 return [True, alarm_value]
@@ -67,6 +93,7 @@ def check_alarm_match_and_update_data(alarm):
     
     print("Alarm is not triggered and its under 10mins wait period so person must have come back in room")
     update_trigger_alarm(alarm["id"], True, current_utc_time)
+    send_push_message(alarm["token"], "Alarm is triggered")
     return
 
 
@@ -80,6 +107,7 @@ try:
             if GPIO.input(PIR_PIN):
                 print("Motion Detected")
                 check_alarm_match_and_update_data(alarm)
+                
         sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
