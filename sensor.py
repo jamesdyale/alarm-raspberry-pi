@@ -64,7 +64,7 @@ def check_alarm_match_and_update_data(alarm):
     update_trigger_alarm(alarm["id"], True, current_utc_time)
     return
 
-def motion_detector():
+def motion_detector(PIR_PIN):
     print("Motion Detected")
     alarms = db.child("alarms").get()
     is_alarm_triggered, alarm  = match_time(alarms.val())
