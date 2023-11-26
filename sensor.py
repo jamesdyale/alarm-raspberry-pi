@@ -29,7 +29,6 @@ def update_trigger_alarm(alarm_id, current_state, utc_current_time):
 
 
 def match_time(alarms, is_alarm_allowed_to_trigger):
-    print("Checking if time matches")
     utc_current_time = datetime.utcnow().strftime("%H:%M")
     current_time_hour = utc_current_time.split(":")[0]
     current_time_minute = utc_current_time.split(":")[1]
@@ -41,7 +40,6 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
         if alarm_hour == current_time_hour:
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
-                    print("Time matched")
                     is_alarm_allowed_to_trigger = True
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
             
@@ -81,12 +79,11 @@ try:
         alarms = db.child("alarms").get()
 
         isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
-        print("Time matched: ", isTimeMatched)
+        
         if isTimeMatched:
             if GPIO.input(PIR_PIN):
-                print("Motion Detected")
                 check_motion_and_update_data(alarm)
-        sleep(10)
+        sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
