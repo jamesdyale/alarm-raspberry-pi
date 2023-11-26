@@ -76,6 +76,7 @@ try:
     while True:
         print("App running")
         alarms = db.child("alarms").get()
+        print("GPIO.input(PIR_PIN)", GPIO.input(PIR_PIN))
         if GPIO.input(PIR_PIN):
             print("Motion Detected...")
                 # check_motion_and_update_data(alarm)
