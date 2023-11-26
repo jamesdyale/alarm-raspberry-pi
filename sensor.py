@@ -3,6 +3,8 @@ from time import sleep, strftime
 from datetime import datetime
 import pyrebase
 
+is_alarm_allowed_to_trigger = False
+
 config = {
     "apiKey": "",
     "authDomain": "",
@@ -37,9 +39,13 @@ def match_time(alarms):
         if alarm_hour == current_time_hour:
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
-                    update_trigger_alarm(alarm["id"], True, utc_current_time)
-            return [True, alarm]
-
+                    is_alarm_allowed_to_trigger = True
+                    update_trigger_alarm(alarm_value["id"], True, utc_current_time)
+            
+            if is_alarm_allowed_to_trigger:
+                return [True, alarm_value]
+        
+    is_alarm_allowed_to_trigger = False
     return [False, None]
 
 
@@ -66,7 +72,6 @@ def check_motion_and_update_data(alarm):
 
 try:
     while True:
-        current_time = datetime.utcnow().strftime("%H:%M")
         alarms = db.child("alarms").get()
 
         isTimeMatched, alarm = match_time(alarms.val())
