@@ -52,7 +52,6 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
 
 
 def check_motion_and_update_data(alarm):
-    print("Checking motion and updating data")
     current_utc_time = datetime.utcnow().strftime("%H:%M")
     current_minute = current_utc_time.split(":")[1]
     alarm_minute = alarm["time"].split(":")[1]
@@ -77,13 +76,13 @@ try:
     while True:
         print("App running")
         alarms = db.child("alarms").get()
-
-        isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
+        if GPIO.input(PIR_PIN):
+            print("Motion Detected...")
+                # check_motion_and_update_data(alarm)
+        # isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
         
-        if isTimeMatched:
-            if GPIO.input(PIR_PIN):
-                check_motion_and_update_data(alarm)
-        sleep(1)
+        # if isTimeMatched:
+        # sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
