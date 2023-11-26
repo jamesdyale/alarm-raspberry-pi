@@ -79,17 +79,13 @@ try:
     while True:
         print("App running")
         alarms = db.child("alarms").get()
-        print("PIR_PIN: ")
-        print(GPIO.input(PIR_PIN))
-        if GPIO.input(PIR_PIN):
-            print("Motion Detected")
-        # isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
 
-        # if isTimeMatched:
-        #     print("Time matched")
-        #     if GPIO.input(PIR_PIN):
-        #         print("Motion Detected")
-        #         check_motion_and_update_data(alarm)
+        isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
+        print("Time matched: ", isTimeMatched)
+        if isTimeMatched:
+            if GPIO.input(PIR_PIN):
+                print("Motion Detected")
+                check_motion_and_update_data(alarm)
         sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
