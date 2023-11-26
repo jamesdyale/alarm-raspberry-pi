@@ -24,6 +24,8 @@ db = firebase.database()
 def update_trigger_alarm(alarm_id, current_state, utc_current_time):
     db.child("alarms").child(alarm_id).update({"triggered": current_state, "current_time": utc_current_time})
 
+def clean_up_triggered_alarms(alarm_id):
+    db.child("alarms").child(alarm_id).update({"triggered": False, "current_time": ""})
 
 def match_time(alarms):
     utc_current_time = datetime.utcnow().strftime("%H:%M")
@@ -41,7 +43,10 @@ def match_time(alarms):
                     
             if (int(current_time_minute) >= int(alarm_minute)):
                 return [True, alarm_value]
-        
+        else: 
+            if alarm_value["triggered"]:
+                clean_up_triggered_alarms(alarm_value["id"])
+                
     return [False, None]
 
 
