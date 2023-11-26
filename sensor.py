@@ -45,11 +45,11 @@ def match_time(alarms, is_alarm_allowed_to_trigger):
                     is_alarm_allowed_to_trigger = True
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
             
-            if is_alarm_allowed_to_trigger:
-                print("Alarm is allowed to trigger")
-                return [True, alarm_value]
+            # if is_alarm_allowed_to_trigger:
+            #     print("Alarm is allowed to trigger")
+            return [True, alarm_value]
         
-    is_alarm_allowed_to_trigger = False
+    # is_alarm_allowed_to_trigger = False
     return [False, None]
 
 
@@ -86,7 +86,7 @@ try:
             if GPIO.input(PIR_PIN):
                 print("Motion Detected")
                 check_motion_and_update_data(alarm)
-        sleep(1)
+        sleep(10)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
