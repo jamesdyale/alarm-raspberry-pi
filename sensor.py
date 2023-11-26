@@ -65,7 +65,7 @@ def match_time(alarms):
             if alarm_minute == current_time_minute:
                 if not alarm_value["triggered"]:
                     update_trigger_alarm(alarm_value["id"], True, utc_current_time)
-                    send_push_message(alarm["token"], "Alarm is triggered")
+                    send_push_message(alarm_value["token"], "Alarm is triggered")
                     
             if (int(current_time_minute) >= int(alarm_minute)):
                 return [True, alarm_value]
