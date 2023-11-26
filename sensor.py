@@ -83,7 +83,7 @@ try:
         # isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
         
         # if isTimeMatched:
-        # sleep(1)
+        sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
