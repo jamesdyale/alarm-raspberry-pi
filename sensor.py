@@ -4,10 +4,10 @@ from datetime import datetime
 import pyrebase
 
 config = {
-    "apiKey":"AIzaSyCs7mxtAmpeXgH5SS-qKBBzu0VLLWTJFF0",
-    "authDomain": "alarm-clock-app-537c6.firebaseapp.com",
-    "databaseURL": "https://alarm-clock-app-537c6-default-rtdb.firebaseio.com/",
-    "storageBucket": "alarm-clock-app-537c6.appspot.com"
+    "apiKey":"",
+    "authDomain": "",
+    "databaseURL": "",
+    "storageBucket": ""
 }
 
 
