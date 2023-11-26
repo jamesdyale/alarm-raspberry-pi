@@ -6,10 +6,10 @@ import pyrebase
 is_alarm_allowed_to_trigger = False
 
 config = {
-    "apiKey": "",
-    "authDomain": "",
-    "databaseURL": "",
-    "storageBucket": ""
+    "apiKey": "AIzaSyCs7mxtAmpeXgH5SS-qKBBzu0VLLWTJFF0",
+    "authDomain": "alarm-clock-app-537c6.firebaseapp.com",
+    "databaseURL": "https://alarm-clock-app-537c6-default-rtdb.firebaseio.com",
+    "storageBucket": "alarm-clock-app-537c6.appspot.com"
 }
 
 GPIO.setmode(GPIO.BCM)
@@ -23,11 +23,13 @@ firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
 
+
 def update_trigger_alarm(alarm_id, current_state, utc_current_time):
     db.child("alarms").child(alarm_id).update({"triggered": current_state, "current_time": utc_current_time})
 
 
-def match_time(alarms):
+def match_time(alarms, is_alarm_allowed_to_trigger):
+    print("Entered matching")
     utc_current_time = datetime.utcnow().strftime("%H:%M")
     current_time_hour = utc_current_time.split(":")[0]
     current_time_minute = utc_current_time.split(":")[1]
@@ -59,7 +61,7 @@ def check_motion_and_update_data(alarm):
         update_trigger_alarm(alarm["id"], False, current_utc_time)
         return
 
-    if (current_minute - alarm_minute) > 10:
+    if (int(current_minute) - int(alarm_minute)) > 10:
         print("Alarm is past 10 mins wait period so it will be turned off")
         update_trigger_alarm(alarm["id"], False, current_utc_time)
         return
@@ -72,15 +74,16 @@ def check_motion_and_update_data(alarm):
 
 try:
     while True:
+        print("App running")
         alarms = db.child("alarms").get()
 
-        isTimeMatched, alarm = match_time(alarms.val())
+        isTimeMatched, alarm = match_time(alarms.val(), is_alarm_allowed_to_trigger)
 
         if isTimeMatched:
             if GPIO.input(PIR_PIN):
                 check_motion_and_update_data(alarm)
                 print("Motion Detected")
-        sleep(60)
+        sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
     GPIO.cleanup()
